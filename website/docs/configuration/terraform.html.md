@@ -100,6 +100,10 @@ to newer versions of Terraform without altering the module.
 
 ## Specifying Required Provider Versions and Source
 
+[inpage-source]: #specifying-required-provider-versions-and-source
+
+-> **Note:** The provider `source` attribute was introduced in Terraform v0.13.
+
 The `required_providers` setting is a map specifying a version constraint and source for
 each provider required by your configuration.
 
@@ -123,6 +127,40 @@ terraform {
     aws = ">= 2.7.0"
   }
 }
+```
+
+### Third-Party Providers
+If you have a third-party provider binary that is not in the public registry,
+you will need to make up an arbitrary source for that provider and copy (or
+link) the binary to a directory corresponding to that source.
+
+Once you've chosen a source, the binary needs to be installed into the following directory heirarchy:
+
+```
+$PLUGINDIR/$SOURCEHOST/$NAMESPACE/$TYPE/$VERSION/$OS_$ARCH/
+```
+
+The $OS_$ARCH must be the same operating system and architecture you are
+currently using for Terraform. 
+
+For example, consider a provider called `terraform-provider-mycloud`. You can
+use any source, though a best practice is to choose something logical to you:
+
+```hcl
+terraform {
+  required_providers {
+    mycloud = {
+      source = "example.com/mycompany/mycloud"
+      version = "1.0"
+    }
+  }
+}
+```
+
+Terraform will look for the binary in the following directory (replace `$OS_$ARCH` with the appropriate operating system and architecture which you are using to run Terraform):
+
+```
+$PLUGINDIR/example.com/mycompany/mycloud/1.0/$OS_$ARCH/terraform-provider-mycloud
 ```
 
 ### Version Constraint Strings
